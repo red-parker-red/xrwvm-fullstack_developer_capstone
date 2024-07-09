@@ -71,13 +71,14 @@ def registration(request):
         username_exist = True
     except Exception as err:
         # If not, simply log this is a new user
+        print(err)
         logger.debug("{} is new user".format(username))
 
     # If it is a new user
     if not username_exist:
         # Create user in auth_user table
         user = User.objects.create_user(
-            username=username, first_name=first_name, 
+            username=username, first_name=first_name,
             last_name=last_name, password=password, email=email)
         # Login the user and redirect to list page
         login(request, user)
@@ -90,7 +91,7 @@ def registration(request):
 
 # # Update the `get_dealerships` view to render the index page with
 # a list of dealerships
-# Update the `get_dealerships` render list of dealerships all by default, 
+# Update the `get_dealerships` render list of dealerships all by default,
 # particular state if state is passed
 
 
@@ -136,14 +137,15 @@ def get_dealer_details(request, dealer_id):
 
 
 def add_review(request):
-    if not(request.user.is_anonymous):
+    if not (request.user.is_anonymous):
         data = json.loads(request.body)
         try:
-            # response = post_review(data)
+            response = post_review(data)
+            print(response)
             return JsonResponse({"status": 200})
         except Exception as err:
             return JsonResponse({"status": 401, "message":
-                     "Error in posting review"})
+                        "Error in posting review: {err}".format(err)})
     else:
         return JsonResponse({"status": 403, "message": "Unauthorized"})
 # ...
